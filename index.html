@@ -1,0 +1,35 @@
+<html>
+	<body>
+		<input id="usuario"/> <button onclick="arrancar()">Arrancar</button>
+		<input id="mensaje"/> <button onclick="enviarMensaje()">Enviar</button>
+		<ol id="chat"></ol>
+	</body>
+</html>
+
+<script>
+	let socket
+	function arrancar() {
+		// Create WebSocket connection.
+		const usuario = document.getElementById("usuario").value
+		socket = new WebSocket(`ws://localhost:8080/${usuario}`);
+
+		// Connection opened
+		socket.addEventListener("open", (event) => {
+			socket.send("Hello Server!");
+		});
+
+		// Listen for messages
+		socket.addEventListener("message", (event) => {
+			console.log("Message from server ", event.data);
+			const item = document.createElement('li')
+			const texto = document.createTextNode(event.data)
+			item.appendChild(texto)
+			document.getElementById("chat").appendChild(item)
+		});
+	}
+
+	function enviarMensaje() {
+		const mensaje = document.getElementById('mensaje')?.value
+		socket.send(mensaje)
+	}
+</script>
